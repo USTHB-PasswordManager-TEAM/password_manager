@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "PASSWORD MANAGER",
+  "version": "2.1.0",
+  "description": "The Best Password Manager Ever - Auto-save, Auto-fill, Military-grade Security",
+  "author": "PASSWORD MANAGER Team",
+  
+  "permissions": [
+    "storage",
+    "activeTab",
+    "clipboardWrite",
+    "contextMenus",
+    "scripting",
+    "tabs",
+    "alarms",
+    "notifications"
+  ],
+  
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "<all_urls>"
+  ],
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "PASSWORD MANAGER"
+  },
+  
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

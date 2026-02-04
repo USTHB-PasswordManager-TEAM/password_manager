@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PASSWORD MANAGER</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div id="app" class="dark-theme">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🔐</span>
+                <span class="logo-text">PASSWORD MANAGER</span>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
+                <button id="settings-btn" class="icon-btn" title="Settings">⚙️</button>
+                <button id="logout-btn" class="icon-btn hidden" title="Logout">🚪</button>
+            </div>
+        </header>
+
+        <!-- Connection Status -->
+        <div id="connection-status" class="status-bar">
+            <span class="status-dot"></span>
+            <span class="status-text">Connecting...</span>
+        </div>
+
+        <!-- Setup Screen -->
+        <div id="setup-screen" class="screen hidden">
+            <div class="screen-content">
+                <h2>🔒 Create Master Password</h2>
+                <p class="subtitle">This password will protect all your data</p>
+                <div class="form-group">
+                    <input type="password" id="setup-password" placeholder="Enter master password" class="input-field">
+                    <div id="setup-strength" class="strength-bar"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="setup-confirm" placeholder="Confirm password" class="input-field">
+                </div>
+                <button id="setup-btn" class="btn btn-primary btn-full">Create Password</button>
+            </div>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen hidden">
+            <div class="screen-content">
+                <h2>🔑 Enter Master Password</h2>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="Master password" class="input-field">
+                </div>
+                <button id="login-btn" class="btn btn-primary btn-full">Unlock</button>
+                <div id="login-error" class="error-msg hidden"></div>
+            </div>
+        </div>
+
+        <!-- Main Screen -->
+        <div id="main-screen" class="screen hidden">
+            <!-- Current Site Banner -->
+            <div id="current-site-banner" class="current-site-banner hidden">
+                <div class="site-info">
+                    <span class="site-icon">🌐</span>
+                    <div class="site-details">
+                        <span id="current-site-name" class="site-name">example.com</span>
+                        <span id="current-site-match" class="site-match">No saved passwords</span>
+                    </div>
+                </div>
+                <button id="autofill-btn" class="btn btn-primary btn-sm" disabled>🔑 Auto-fill</button>
+            </div>
+
+            <!-- Search & Actions Bar -->
+            <div class="action-bar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" placeholder="Search passwords..." class="search-input">
+                </div>
+                <button id="add-btn" class="btn btn-primary btn-sm">➕ Add</button>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="category-filter">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="favorites">⭐</button>
+                <div id="category-list" class="category-scroll"></div>
+            </div>
+
+            <!-- Password List -->
+            <div id="password-list" class="password-list">
+                <!-- Passwords will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state hidden">
+                <span class="empty-icon">📭</span>
+                <p>No passwords yet</p>
+                <button class="btn btn-secondary btn-sm" id="add-first-btn">Add your first password</button>
+            </div>
+
+            <!-- Stats Footer -->
+            <div class="stats-footer">
+                <span id="total-count">0 passwords</span>
+                <button id="generate-btn" class="btn btn-secondary btn-sm">🎲 Generate</button>
+            </div>
+        </div>
+
+        <!-- Add/Edit Modal -->
+        <div id="modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Add Password</h3>
+                    <button id="modal-close" class="icon-btn">✕</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-id">
+                    <div class="form-group">
+                        <label>Website / App</label>
+                        <input type="text" id="input-website" class="input-field" placeholder="e.g., Google">
+                    </div>
+                    <div class="form-group">
+                        <label>URL (optional)</label>
+                        <input type="url" id="input-url" class="input-field" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Username / Email</label>
+                        <input type="text" id="input-username" class="input-field" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="password-input-group">
+                            <input type="password" id="input-password" class="input-field" placeholder="Password">
+                            <button type="button" id="toggle-password" class="icon-btn">👁️</button>
+                            <button type="button" id="generate-password" class="icon-btn" title="Generate">🎲</button>
+                        </div>
+                        <div id="password-strength" class="strength-indicator"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="input-category" class="input-field">
+                            <option value="General">📁 General</option>
+                            <option value="Social Media">📱 Social Media</option>
+                            <option value="Email">📧 Email</option>
+                            <option value="Banking">🏦 Banking</option>
+                            <option value="Shopping">🛒 Shopping</option>
+                            <option value="Work">💼 Work</option>
+                            <option value="Entertainment">🎮 Entertainment</option>
+                            <option value="Other">📌 Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes (optional)</label>
+                        <textarea id="input-notes" class="input-field textarea" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+                    <button id="modal-save" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Generator Modal -->
+        <div id="generator-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🎲 Password Generator</h3>
+                    <button id="generator-close" class="icon-btn">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="generated-password-display">
+                        <input type="text" id="generated-password" class="input-field" readonly>
+                        <button id="copy-generated" class="icon-btn" title="Copy">📋</button>
+                        <button id="regenerate" class="icon-btn" title="Regenerate">🔄</button>
+                    </div>
+                    <div id="generated-strength" class="strength-bar-full"></div>
+                    
+                    <div class="generator-options">
+                        <div class="option-row">
+                            <label>Length: <span id="length-value">16</span></label>
+                            <input type="range" id="gen-length" min="8" max="32" value="16">
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="gen-lowercase" checked> Lowercase (a-z)</label>
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="gen-uppercase" checked> Uppercase (A-Z)</label>
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="gen-digits" checked> Numbers (0-9)</label>
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="gen-special" checked> Special (!@#$%)</label>
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="gen-ambiguous"> Exclude ambiguous (0O1l)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="generator-tabs">
+                        <button class="tab-btn active" data-type="random">Random</button>
+                        <button class="tab-btn" data-type="memorable">Memorable</button>
+                        <button class="tab-btn" data-type="pin">PIN</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="use-generated" class="btn btn-primary btn-full">Use This Password</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚙️ Settings</h3>
+                    <button id="settings-close" class="icon-btn">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h4>🔒 Security</h4>
+                        <div class="option-row">
+                            <label>Auto-lock timeout</label>
+                            <select id="setting-autolock" class="input-field input-sm">
+                                <option value="1">1 minute</option>
+                                <option value="5" selected>5 minutes</option>
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="0">Never</option>
+                            </select>
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="setting-autosave" checked> Auto-save new passwords</label>
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="setting-autofill" checked> Auto-fill on page load</label>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h4>🎨 Appearance</h4>
+                        <div class="option-row">
+                            <label>Theme</label>
+                            <select id="setting-theme" class="input-field input-sm">
+                                <option value="dark">🌙 Dark</option>
+                                <option value="light">☀️ Light</option>
+                            </select>
+                        </div>
+                        <div class="option-row">
+                            <label><input type="checkbox" id="setting-notifications" checked> Show notifications</label>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h4>📦 Data</h4>
+                        <div class="settings-buttons">
+                            <button id="export-btn" class="btn btn-secondary btn-sm">📤 Export Passwords</button>
+                            <button id="import-btn" class="btn btn-secondary btn-sm">📥 Import Passwords</button>
+                        </div>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                    </div>
+                    <div class="settings-section">
+                        <h4>ℹ️ About</h4>
+                        <div class="about-info">
+                            <p><strong>PASSWORD MANAGER</strong></p>
+                            <p>Version 2.1.0</p>
+                            <p style="font-size: 11px; color: #888;">Military-grade AES-256 encryption</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="settings-save" class="btn btn-primary">Save Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast" class="toast hidden">
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
