@@ -1,40 +1,56 @@
-**Short description**
-A secure desktop application for managing passwords, developed in Python. The application stores user credentials (site name, username, password, notes) in a local encrypted database, unlocked with a single Master Password. The goal is to practice GUI development, secure local storage, and applied cryptography.
+# 🔐 Secure Password Manager
 
-**Objectives**
+A secure desktop application for managing passwords, developed in **Python**. The application stores user credentials (site name, username, password, and notes) in a local encrypted SQLite database protected by a single **Master Password**. This project was developed to practice GUI development, secure local storage, and applied cryptography.
 
-Implement a functional and secure password manager (MVP) with: master-password authentication, encrypted storage, add/edit/delete credentials, password generation, and copy-to-clipboard.
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=python,sqlite,git,github,vscode" />
+</p>
 
-Maintain a clear commit history and iterative development on GitHub.
+---
 
-Demonstrate understanding of encryption (key derivation + symmetric encryption), SQLite usage, and GUI programming.
+## 🎯 Objectives
 
-**MVP Features**
+- Develop a functional and secure password manager (MVP).
+- Implement master-password authentication.
+- Encrypt stored credentials using modern cryptography.
+- Manage credentials (add, edit, delete, and view).
+- Generate strong passwords.
+- Copy passwords securely to the clipboard.
+- Maintain a clean GitHub commit history and iterative development.
 
-Create / set Master Password (first run).
+---
 
-Master Password verification (PBKDF2) and symmetric encryption (Fernet/AES).
+## ✨ Features
 
-Store credentials in a local SQLite database (encrypted password field).
+| Feature | Description |
+|---------|-------------|
+| 🔑 **Master Password** | Create a master password on first launch and verify it on every login. |
+| 🔒 **Secure Encryption** | Uses PBKDF2 for key derivation and Fernet symmetric encryption to protect stored passwords. |
+| 💾 **Encrypted Database** | Credentials are stored in a local SQLite database with encrypted password fields. |
+| 🖥️ **Desktop GUI** | Simple interface to add, edit, delete, search, and manage credentials. |
+| 👁️ **Password Visibility** | Show or hide passwords when needed. |
+| 📋 **Copy to Clipboard** | Quickly copy passwords to the clipboard. |
+| 🔐 **Password Generator** | Generate strong passwords with configurable length and optional symbols. |
 
-GUI: list entries, add, edit, delete, view password, copy password to clipboard.
+---
 
-Password generator (configurable length, with/without symbols).
+## 🛠️ Tech Stack
 
-**Tech stack**
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=python,sqlite,git,github,vscode" />
+</p>
 
-Language: Python 3.8+
+| Category | Technology |
+|----------|------------|
+| **Language** | Python 3.8+ |
+| **GUI** | Tkinter *(or PyQt / CustomTkinter)* |
+| **Database** | SQLite (`sqlite3`) |
+| **Cryptography** | `cryptography` (PBKDF2HMAC + Fernet) |
+| **Version Control** | Git & GitHub |
 
-GUI: Tkinter (or PyQt/customtkinter for advanced UI)
+---
 
-Database: SQLite (sqlite3)
+## 👥 Team
 
-Cryptography: cryptography library (PBKDF2HMAC + Fernet)
-
-Tools: Git, GitHub
-
-Team
-
-**Team members**
-ABDELMADJID BAGHDALI 
-ISLAM MERZOUK 
+- **ABDELMADJID BAGHDALI**
+- **ISLAM MERZOUK**
